@@ -56,10 +56,6 @@ https://github.com/opentelekomcloud/cloudmon
 * https://github.com/frosty-geek/apimon-tests
 
 
-## offtopic
-
-* flavor and image name standartisation is not well perceived and nobody from SCS is willing to discuss it in public-cloud sig
-
 ## next steps
 
 rebuild first installation of cloudmon @plusserver
