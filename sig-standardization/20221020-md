@@ -1,0 +1,51 @@
+### Participants
+* @garloff
+* @frosty-geek
+* @fkr
+* @matfechner
+* @berendt 
+
+### Reporting in community call and pushing notes from etherpad to minutes repo
+* @garloff
+
+### Agenda
+
+#### Docs Directory structure
+- Design-Docs vs. Decisions vs. Standards directories in Docs repo
+* Design-Docs currently holds flavor-naming and image-metadata standards
+- Subdirectory tools holds conformance tests and tools for these
+* Standards holds ADR SCS-0001
+* Decisions is target for ADRs  on machine identities and SSD flavors
+=> All ADRs / Standards should go into Standards, as documented in SCS-0001
+
+#### Meta SCS standards container needed? Overview of standards and their effective dates
+=> Is needed
+* Need to also state which standards are mandatory/optional for which SCS compliance/certification level
+-> This is the one canonical place where things come together and where we explicitly state which of the standards need to be complied to in order to achieve an SCS compliance level.
+* => Describe relationship of SCS certification (meta docs) in ADR SCS-0002
+
+#### https://github.com/SovereignCloudStack/Docs/pull/143 (ADR SCS-0001)
+-> go over Docs/Design-Docs/ to see which of these need to be adapted to the format
+Convert docs into SCS-0001 defined format!
+- image-properties
+- flavor-naming
+- release numbering
+
+* Do we need?
+- effective date => not needed, so meta-doc above
+-  version history 
+* Wording stabilized at vs released vs effective
+=> Please open PR if important
+* Do we need optional sections?
+- related documents
+
+#### Report from Public Cloud SIG @ OpenInfra
+* Felix, Artem, ... participating to ensure better alignment
+  * https://etherpad.opendev.org/p/publiccloud-sig-meeting
+  * https://meetings.opendev.org/meetings/publiccloud_sig/2022/publiccloud_sig.2022-09-28-08.01.log.html
+  * https://meetings.opendev.org/meetings/publiccloud_sig/2022/publiccloud_sig.2022-10-12-08.02.log.html
+
+* What should be required, what is optional?
+- Long discussion on transparency on oversubscribing CPUs
+- Discussion on ECC requirement
+=> Provide certain quality levels that users can chose from
