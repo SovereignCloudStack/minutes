@@ -43,7 +43,7 @@ if test -z "$1" -o "$1" = "-h"; then usage; fi
 if test ! -r "$1"; then echo "ERROR: File \"$1\" not readable" 1>&2; exit 2; fi
 INPATH=${1%/*}
 INFILE=${1##*/}
-if test "$INPATH" != "$1"; then cd $INPATH; INPATH="${INPATH}/"; fi
+if test "$INPATH" != "$1"; then cd $INPATH; INPATH="${INPATH}/"; else INPATH=""; fi
 
 ADDS=""
 errs=0
