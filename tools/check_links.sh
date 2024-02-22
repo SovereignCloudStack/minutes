@@ -65,7 +65,7 @@ while read line; do
 			fi
 		fi
 	fi
-done < <(grep 'https://input.scs.community' "$INFILE")
+done < <(tr ' ' '\n' < "$INFILE"|grep 'https://input.scs.community'|sed 's/!\[..*\]//g')
 if test "$DOWNLOAD" -a -n "$ADDS"; then
 	echo -e "Consider\ngit add $ADDS"
 fi
