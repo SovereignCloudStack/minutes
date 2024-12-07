@@ -32,6 +32,7 @@ ispic()
 exist()
 {
 	fn=${1##*/}
+	fn=${fn%%#*}
 	test -r $fn
 }
 
