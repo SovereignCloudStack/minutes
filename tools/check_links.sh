@@ -9,10 +9,10 @@
 
 usage()
 {
-	echo "Usage: check_links.sh [-d] [-a] mdfile"
-	echo "The script will search the mdfile for pictures from hedgedoc and report the missing ones"
+	echo "Usage: check_links.sh [-d] [-a] mdfile [mdfile [...]]"
+	echo "The script will search the mdfile(s) for pictures from hedgedoc and report the missing ones"
 	echo "The option -d will also download the missing ones and suggest you git add them."
-	echo "The option -a will not limit the links to be downloaded to images."
+	echo "The option -a will not limit the links to  images but all linked files."
 	exit 1
 }
 
@@ -42,12 +42,15 @@ if test "$1" = "-d"; then DOWNLOAD=1; shift; fi
 if test "$1" = "-a"; then ALL=1; shift; fi
 if test -z "$1" -o "$1" = "-h"; then usage; fi
 if test ! -r "$1"; then echo "ERROR: File \"$1\" not readable" 1>&2; exit 2; fi
-INPATH=${1%/*}
-INFILE=${1##*/}
-if test "$INPATH" != "$1"; then cd $INPATH; INPATH="${INPATH}/"; else INPATH=""; fi
 
 ADDS=""
 errs=0
+while test -n "$1"; do
+INPATH=${1%/*}
+INFILE=${1##*/}
+pushd .
+if test "$INPATH" != "$1"; then cd $INPATH; INPATH="${INPATH}/"; else INPATH=""; fi
+
 while read line; do
 	# FIXME: Handle multiple links in one line
 	LINK="$(echo $line | sed 's@^.*\(https://input.scs.community/[^) #"]*\).*$@\1@')"
@@ -67,6 +70,10 @@ while read line; do
 		fi
 	fi
 done < <(tr ' ' '\n' < "$INFILE"|grep 'https://input.scs.community'|sed 's/!\[..*\]//g')
+shift
+popd
+done
+
 if test "$DOWNLOAD" -a -n "$ADDS"; then
 	echo -e "Consider\ngit add $ADDS"
 fi
