@@ -33,6 +33,7 @@ exist()
 {
 	fn=${1##*/}
 	fn=${fn%%#*}
+	fn=${fn%%?*}
 	test -r $fn
 }
 
