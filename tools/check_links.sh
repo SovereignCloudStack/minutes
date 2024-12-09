@@ -75,9 +75,10 @@ while read line; do
 				fi
 				if test $ERR = "0"; then
 					echo "Downloaded $LINK successfully."
-					ADDS="$ADDS ${INPATH}${LINK##*/}"
+					ADDS="$ADDS ${INPATH}${TGTFILE}"
+					# We strip off variables here, but leave anchors in
 					LINK="$(echo $line | sed 's@^.*\(https://input.scs.community/[^) #"]*\).*$@\1@')"
-					CHANGES="$CHANGES -e 's~$LINK~./$TGTFILE~g'"
+					CHANGES="$CHANGES -e 's~${LINK}~./${TGTFILE}~g'"
 				else echo "ERROR downloading $LINK" 1>&2; let errs+=1; fi
 			else
 				let errs+=1
