@@ -41,6 +41,7 @@ if test -z "$1" -o "$1" = "-h"; then usage; fi
 if test ! -r "$1"; then echo "ERROR: File \"$1\" not readable" 1>&2; exit 2; fi
 
 ADDS=""
+CHGD=""
 errs=0
 
 SEDCHANGES=""
@@ -102,14 +103,17 @@ while read line; do
 		else echo "ERROR downloading $LINK" 1>&2; let errs+=1; fi
 	fi
 done < <(tr ' ' '\n' < "$INFILE"|grep 'https://input.scs.community'|sed 's/!\[..*\]//g')
-if test -n "$CHANGES"; then SEDCHANGES="${SEDCHANGES}sed -i $CHANGES $1; "; fi
+if test -n "$CHANGES"; then SEDCHANGES="${SEDCHANGES}sed -i $CHANGES $1; "; CHGD="$CHGD $1"; fi
 shift
 popd >/dev/null 2>&1
 done
 
 if test "$DOWNLOAD" -a -n "$ADDS"; then
-	echo -e "Consider\ngit add $ADDS"
-	echo "$SEDCHANGES"
+	echo -e "Consider\ngit add$ADDS"
+	if test -n "$CHGD"; then
+		echo "$SEDCHANGES"
+		echo "git add$CHGD"
+	fi
 fi
 if test $errs -gt 0; then
 	echo "$errs missing files" 1>&2
