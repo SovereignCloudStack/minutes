@@ -56,15 +56,15 @@ while read line; do
 	# FIXME: Handle multiple links in one line
 	LINK="$(echo $line | sed 's@^.*\(https://input.scs.community/[^) #?"]*\).*$@\1@')"
 	LINK="${LINK%\'}"
-        TGTFILE="${LINK##*/}"
+	TGTFILE="${LINK##*/}"
 	if test -z "$TGTFILE"; then continue; fi
 	if test "$ALL" = "1" || ispic "$LINK"; then
-                ERR=0
+		ERR=0
 		echo " Consider replacing $LINK with $TGTFILE[.md] ..."
 		if exist "$TGTFILE"; then
 			echo "$TGTFILE present already"
-                elif exist "$TGTFILE.md"; then
-                        TGTFILE="$TGTFILE.md"
+		elif exist "$TGTFILE.md"; then
+			TGTFILE="$TGTFILE.md"
 			echo "$TGTFILE present already"
 		else
 			echo "$LINK missing"
@@ -83,12 +83,18 @@ while read line; do
 					ADDS="$ADDS ${INPATH}${TGTFILE}"
 				fi
 			fi
-                fi
-                if test $ERR = 0; then
-                        # We strip off variables here, but leave anchors in
-                        LINK="$(echo $line | sed 's@^.*\(https://input.scs.community/[^) #"]*\).*$@\1@')"
-                        CHANGES="$CHANGES -e 's~${LINK}~./${TGTFILE}~g'"
-                else echo "ERROR downloading $LINK" 1>&2; let errs+=1; fi
+		fi
+		if test $ERR = 0; then
+			# We strip off variables here, but leave anchors in
+			LINK="$(echo $line | sed 's@^.*\(https://input.scs.community/[^) #"]*\).*$@\1@')"
+			LINK2="$(echo $line | sed 's@^.*(\(https://input.scs.community/[^) #"]*\)).*$@\1@')"
+			LINK3="$(echo $line | sed 's@^.*<\(https://input.scs.community/[^) #"]*\)>.*$@\1@')"
+			if test "$LINK" = "$LINK2" -o "$LINK" = "$LINK3"; then
+				CHANGES="$CHANGES -e 's~${LINK}~./${TGTFILE}~g'"
+			else
+				CHANGES="$CHANGES -e 's~${LINK}~[${TGTFILE%#*}](./${TGTFILE})~g'"
+			fi
+		else echo "ERROR downloading $LINK" 1>&2; let errs+=1; fi
 	fi
 done < <(tr ' ' '\n' < "$INFILE"|grep 'https://input.scs.community'|sed 's/!\[..*\]//g')
 if test -n "$CHANGES"; then SEDCHANGES="${SEDCHANGES}sed -i $CHANGES $1; "; fi
