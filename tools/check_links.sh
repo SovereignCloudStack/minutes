@@ -30,8 +30,7 @@ ispic()
 
 exist()
 {
-	fn=${1##*/}
-	test -r $fn
+	test -r "$fn"
 }
 
 # main
@@ -56,36 +55,40 @@ while read line; do
 	# FIXME: Handle multiple links in one line
 	LINK="$(echo $line | sed 's@^.*\(https://input.scs.community/[^) #?"]*\).*$@\1@')"
 	LINK="${LINK%\'}"
+        TGTFILE="${LINK##*/}"
 	if test "$ALL" = "1" || ispic $LINK; then
-		if exist $LINK; then 
-			echo "$LINK present already"
+                ERR=0
+		if exist "$TGTFILE"; then
+			echo "$TGTFILE present already"
+                elif exist "$TGTFILE.md"; then
+                        TGTFILE="$TGTFILE.md"
+			echo "$TGTFILE present already"
 		else
 			echo "$LINK missing"
 			if test "$DOWNLOAD" = "1"; then
 				if ispic $LINK; then
 					curl -LO "$LINK"
 					ERR=$?
-					TGTFILE=${LINK##*/}
 				else
 					curl -LO "$LINK"/download
 					ERR=$?
-					TGTFILE=${LINK##*/}.md
-					mv download $TGTFILE
+					TGTFILE="${LINK##*/}.md"
+					mv download "$TGTFILE"
 				fi
-				if test $ERR = "0"; then
+				if test $ERR = 0; then
 					echo "Downloaded $LINK successfully."
 					ADDS="$ADDS ${INPATH}${TGTFILE}"
-					# We strip off variables here, but leave anchors in
-					LINK="$(echo $line | sed 's@^.*\(https://input.scs.community/[^) #"]*\).*$@\1@')"
-					CHANGES="$CHANGES -e 's~${LINK}~./${TGTFILE}~g'"
-				else echo "ERROR downloading $LINK" 1>&2; let errs+=1; fi
-			else
-				let errs+=1
+				fi
 			fi
-		fi
+                fi
+                if test $ERR = 0; then
+                        # We strip off variables here, but leave anchors in
+                        LINK="$(echo $line | sed 's@^.*\(https://input.scs.community/[^) #"]*\).*$@\1@')"
+                        CHANGES="$CHANGES -e 's~${LINK}~./${TGTFILE}~g'"
+                else echo "ERROR downloading $LINK" 1>&2; let errs+=1; fi
 	fi
 done < <(tr ' ' '\n' < "$INFILE"|grep 'https://input.scs.community'|sed 's/!\[..*\]//g')
-if test -n "$CHANGES"; then SEDCHANGES="$SEDCHANGES sed -i $CHANGES $1;"; fi
+if test -n "$CHANGES"; then SEDCHANGES="${SEDCHANGES}sed -i $CHANGES $1; "; fi
 shift
 popd >/dev/null 2>&1
 done
