@@ -54,18 +54,23 @@ echo "*** $INFILE ***"
 CHANGES=""
 while read line; do
 	# FIXME: Handle multiple links in one line
-	LINK="$(echo $line | sed 's@^.*\(https://input.scs.community/[^) #?"]*\).*$@\1@')"
-	LINK="${LINK%\'}"
-	TGTFILE="${LINK##*/}"
+	LINK1="$(echo $line | sed 's@^.*\(https://input.scs.community/[^) "]*\).*$@\1@')"
+	LINK="${LINK1%\'}"
+	LINKANCHOR="${LINK##*#}"
+	if test "$LINK" = "$LINKANCHOR"; then LINKANCHOR=""; fi
+	LINKNOANCHOR="${LINK%#*}"
+	LINKNOVAR="${LINK%\?*}"
+	LINKNONO="${LINKNOANCHOR%\?*}"
+	TGTFILE="${LINKNONO##*/}"
 	if test -z "$TGTFILE"; then continue; fi
 	if test "$ALL" = "1" || ispic "$LINK"; then
 		ERR=0
 		echo " Consider replacing $LINK with $TGTFILE[.md] ..."
 		if exist "$TGTFILE"; then
-			echo "$TGTFILE present already"
+			echo " $TGTFILE present already"
 		elif exist "$TGTFILE.md"; then
 			TGTFILE="$TGTFILE.md"
-			echo "$TGTFILE present already"
+			echo " $TGTFILE present already"
 		else
 			echo "$LINK missing"
 			if test "$DOWNLOAD" = "1"; then
@@ -73,26 +78,26 @@ while read line; do
 					curl -sLO "$LINK"
 					ERR=$?
 				else
-					curl -sLO "$LINK"/download
+					curl -sLO "$LINKNONO"/download
 					ERR=$?
-					TGTFILE="${LINK##*/}.md"
+					TGTFILE="${TGTFILE}.md"
 					mv download "$TGTFILE"
 				fi
 				if test $ERR = 0; then
-					echo "Downloaded $LINK successfully."
+					echo " Downloaded $LINK successfully."
 					ADDS="$ADDS ${INPATH}${TGTFILE}"
 				fi
 			fi
 		fi
 		if test $ERR = 0; then
+			if test -n "$LINKANCHOR"; then TGTFILE="$TGTFILE#$LINKANCHOR"; fi
 			# We strip off variables here, but leave anchors in
-			LINK="$(echo $line | sed 's@^.*\(https://input.scs.community/[^) #"]*\).*$@\1@')"
-			LINK2="$(echo $line | sed 's@^.*(\(https://input.scs.community/[^) #"]*\)).*$@\1@')"
-			LINK3="$(echo $line | sed 's@^.*<\(https://input.scs.community/[^) #"]*\)>.*$@\1@')"
-			if test "$LINK" = "$LINK2" -o "$LINK" = "$LINK3"; then
-				CHANGES="$CHANGES -e 's~${LINK}~./${TGTFILE}~g'"
+			if echo "$line" | grep "(${LINK})" >/dev/null; then
+				CHANGES="$CHANGES -e 's~${LINK}~${TGTFILE}~g'"
+			elif echo "$link" | grep "<$LINK>" >/dev/null; then
+				CHANGES="$CHANGES -e 's~<${LINK}[^>]*>~[${TGTFILE%#*}](${TGTFILE}~g'"
 			else
-				CHANGES="$CHANGES -e 's~${LINK}~[${TGTFILE%#*}](./${TGTFILE})~g'"
+				CHANGES="$CHANGES -e 's~${LINK}~[${TGTFILE%#*}](${TGTFILE})~g'"
 			fi
 		else echo "ERROR downloading $LINK" 1>&2; let errs+=1; fi
 	fi
