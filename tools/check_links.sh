@@ -18,7 +18,7 @@ usage()
 
 ispic()
 {
-	ext=${1##*.}
+	ext="${1##*.}"
 	ext="$(echo $ext | tr A-Z a-z)"
 	case $ext in
 		png|jpg|jpeg|heic|heif|svg|avif)
@@ -50,14 +50,17 @@ INFILE=${1##*/}
 pushd . >/dev/null 2>&1
 if test "$INPATH" != "$1"; then cd $INPATH; INPATH="${INPATH}/"; else INPATH=""; fi
 
+echo "*** $INFILE ***"
 CHANGES=""
 while read line; do
 	# FIXME: Handle multiple links in one line
 	LINK="$(echo $line | sed 's@^.*\(https://input.scs.community/[^) #?"]*\).*$@\1@')"
 	LINK="${LINK%\'}"
         TGTFILE="${LINK##*/}"
-	if test "$ALL" = "1" || ispic $LINK; then
+	if test -z "$TGTFILE"; then continue; fi
+	if test "$ALL" = "1" || ispic "$LINK"; then
                 ERR=0
+		echo " Consider replacing $LINK with $TGTFILE[.md] ..."
 		if exist "$TGTFILE"; then
 			echo "$TGTFILE present already"
                 elif exist "$TGTFILE.md"; then
@@ -66,11 +69,11 @@ while read line; do
 		else
 			echo "$LINK missing"
 			if test "$DOWNLOAD" = "1"; then
-				if ispic $LINK; then
-					curl -LO "$LINK"
+				if ispic "$LINK"; then
+					curl -sLO "$LINK"
 					ERR=$?
 				else
-					curl -LO "$LINK"/download
+					curl -sLO "$LINK"/download
 					ERR=$?
 					TGTFILE="${LINK##*/}.md"
 					mv download "$TGTFILE"
