@@ -18,7 +18,6 @@ usage()
 
 ispic()
 {
-	if test "$ALL" = "1"; then return 0; fi
 	ext=${1##*.}
 	ext="$(echo $ext | tr A-Z a-z)"
 	case $ext in
@@ -57,7 +56,7 @@ while read line; do
 	# FIXME: Handle multiple links in one line
 	LINK="$(echo $line | sed 's@^.*\(https://input.scs.community/[^) #?"]*\).*$@\1@')"
 	LINK="${LINK%\'}"
-	if ispic $LINK; then
+	if test "$ALL" = "1" || ispic $LINK; then
 		if exist $LINK; then 
 			echo "$LINK present already"
 		else
