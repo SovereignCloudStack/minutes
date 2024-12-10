@@ -109,7 +109,7 @@ while read line; do
 				CHANGES="$CHANGES -e 's~${LINK}~${TGTFILE}~g'"
 			elif echo "$line" | grep "<$LINK>" >/dev/null; then
 				#echo "<> -> Change to []()"
-				CHANGES="$CHANGES -e 's~<${LINK}[^>]*>~[${TGTFILE%#*}](${TGTFILE}~g'"
+				CHANGES="$CHANGES -e 's~<${LINK}[^>]*>~[${TGTFILE%#*}](${TGTFILE})~g'"
 			else
 				#echo "Plain -> Change to []()"
 				CHANGES="$CHANGES -e 's~${LINK}~[${TGTFILE%#*}](${TGTFILE})~g'"
