@@ -30,7 +30,7 @@ ispic()
 
 exist()
 {
-	test -r "$fn"
+	test -r "$1"
 }
 
 # main
@@ -69,8 +69,8 @@ while read line; do
 		echo " Consider replacing $LINK with $TGTFILE[.md] ..."
 		if exist "$TGTFILE"; then
 			echo " $TGTFILE present already"
-		elif exist "$TGTFILE.md"; then
-			TGTFILE="$TGTFILE.md"
+		elif exist "${TGTFILE}.md"; then
+			TGTFILE="${TGTFILE}.md"
 			echo " $TGTFILE present already"
 		else
 			echo "$LINK missing"
@@ -82,10 +82,11 @@ while read line; do
 					curl -sLO "$LINKNONO"/download
 					ERR=$?
 					TGTFILE="${TGTFILE}.md"
+					sed -i 's/\s*$//' download
 					mv download "$TGTFILE"
 				fi
 				if test $ERR = 0; then
-					echo " Downloaded $LINK successfully."
+					echo " Downloaded $LINKNONO successfully."
 					ADDS="$ADDS ${INPATH}${TGTFILE}"
 				fi
 			fi
