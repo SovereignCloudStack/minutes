@@ -95,26 +95,31 @@ while read line; do
 			if test -n "$LINKANCHOR"; then TGTFILE="$TGTFILE#$LINKANCHOR"; fi
 			# We strip off variables here, but leave anchors in
 			if echo "$line" | grep "(${LINK})" >/dev/null; then
+				#echo "() -> Plain replacement"
 				CHANGES="$CHANGES -e 's~${LINK}~${TGTFILE}~g'"
-			elif echo "$link" | grep "<$LINK>" >/dev/null; then
+			elif echo "$line" | grep "<$LINK>" >/dev/null; then
+				#echo "<> -> Change to []()"
 				CHANGES="$CHANGES -e 's~<${LINK}[^>]*>~[${TGTFILE%#*}](${TGTFILE}~g'"
 			else
+				#echo "Plain -> Change to []()"
 				CHANGES="$CHANGES -e 's~${LINK}~[${TGTFILE%#*}](${TGTFILE})~g'"
 			fi
-		else echo "ERROR downloading $LINK" 1>&2; let errs+=1; fi
+		else
+			echo "ERROR downloading $LINK" 1>&2; let errs+=1
+		fi
 	fi
 done < <(tr ' ' '\n' < "$INFILE"|grep 'https://input.scs.community'|sed 's/!\[..*\]//g')
-if test -n "$CHANGES"; then SEDCHANGES="${SEDCHANGES}sed -i $CHANGES $1; "; CHGD="$CHGD $1"; fi
+if test -n "$CHANGES"; then SEDCHANGES="${SEDCHANGES}sed -i$CHANGES $1; "; CHGD="$CHGD $1"; fi
 shift
 popd >/dev/null 2>&1
 done
 
-if test "$DOWNLOAD" -a -n "$ADDS"; then
+if test -n "$DOWNLOAD" -a -n "$ADDS"; then
 	echo -e "Consider\ngit add$ADDS"
-	if test -n "$CHGD"; then
-		echo "$SEDCHANGES"
-		echo "git add$CHGD"
-	fi
+fi
+if test -n "$DOWNLOAD" -a -n "$CHGD"; then
+	echo "$SEDCHANGES"
+	echo "git add$CHGD"
 fi
 if test $errs -gt 0; then
 	echo "$errs missing files" 1>&2
