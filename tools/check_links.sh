@@ -66,10 +66,12 @@ while read line; do
 	if test -z "$TGTFILE"; then
 		if test -n "$LINKANCHOR" -a -n "#DOWNLOAD"; then
 			echo " Replace link to self with anchor $LINKANCHOR ..."
-			CHANGES="$CHANGES -e 's~${LINK}~#{LINKANCHOR}~g'"
+			CHANGES="$CHANGES -e 's~${LINK}~#${LINKANCHOR}~g'"
 		fi
 		continue
 	fi
+	# Skip .css and .js
+	if test "${TGTFILE%.css}" = "$TGTFILE" -o "${TGTFILE%.js}" = "$TGTFILE"; then continue; fi
 	if test "$ALL" = "1" || ispic "$LINK"; then
 		ERR=0
 		echo " Consider replacing $LINK with $TGTFILE[.md] ..."
@@ -115,7 +117,7 @@ while read line; do
 		fi
 	fi
 done < <(tr ' ' '\n' < "$INFILE"|grep 'https://input.scs.community'|sed 's/!\[..*\]//g')
-if test -n "$CHANGES"; then SEDCHANGES="${SEDCHANGES}sed -i$CHANGES $1; "; CHGD="$CHGD $1"; fi
+if test -n "$CHANGES"; then SEDCHANGES="${SEDCHANGES}sed -i$CHANGES \"$1\"\n"; CHGD="$CHGD \"$1\""; fi
 shift
 popd >/dev/null 2>&1
 done
@@ -124,7 +126,7 @@ if test -n "$DOWNLOAD" -a -n "$ADDS"; then
 	echo -e "Consider\ngit add$ADDS"
 fi
 if test -n "$DOWNLOAD" -a -n "$CHGD"; then
-	echo "$SEDCHANGES"
+	echo -en "$SEDCHANGES"
 	echo "git add$CHGD"
 fi
 if test $errs -gt 0; then
