@@ -91,7 +91,7 @@ while read line; do
 				else
 					curl -sLO "$LINKNONO"/download
 					ERR=$?
-					TGTFILE="${TGTFILE}.md"
+					TGTFILE="${TGTFILE%.md}.md"
 					sed -i 's/\s*$//' download
 					mv download "$TGTFILE"
 				fi
