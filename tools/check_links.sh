@@ -90,9 +90,11 @@ while read line; do
 					curl -sLO "$LINK"
 					ERR=$?
 				else
+					# TODO: Handle hedgedoc /p links (/s does not need speciel treatment)
+					LINKNONO="${LINKNONO/https:\/\/input.scs.community\/p/https://input.scs.community}"
 					curl -sLO "$LINKNONO"/download
 					ERR=$?
-					if test $ERR=0 && grep '^<!DOCTYPE html>$' download >/dev/null; then
+					if test $ERR=0 && grep -i '^<!DOCTYPE html>$' download >/dev/null; then
 						ERR=1
 						rm download
 					else
