@@ -63,7 +63,13 @@ while read line; do
 	LINKNOVAR="${LINK%\?*}"
 	LINKNONO="${LINKNOANCHOR%\?*}"
 	TGTFILE="${LINKNONO##*/}"
-	if test -z "$TGTFILE"; then continue; fi
+	if test -z "$TGTFILE"; then
+		if test -n "$LINKANCHOR" -a -n "#DOWNLOAD"; then
+			echo " Replace link to self with anchor $LINKANCHOR ..."
+			CHANGES="$CHANGES -e 's~${LINK}~#{LINKANCHOR}~g'"
+		fi
+		continue
+	fi
 	if test "$ALL" = "1" || ispic "$LINK"; then
 		ERR=0
 		echo " Consider replacing $LINK with $TGTFILE[.md] ..."
