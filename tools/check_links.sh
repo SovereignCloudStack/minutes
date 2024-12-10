@@ -71,7 +71,7 @@ while read line; do
 		continue
 	fi
 	# Skip .css and .js
-	if test "${TGTFILE%.css}" = "$TGTFILE" -o "${TGTFILE%.js}" = "$TGTFILE"; then continue; fi
+	if test "${TGTFILE%.css}" != "$TGTFILE" -o "${TGTFILE%.js}" != "$TGTFILE"; then continue; fi
 	if test "$ALL" = "1" || ispic "$LINK"; then
 		ERR=0
 		echo " Consider replacing $LINK with $TGTFILE[.md] ..."
