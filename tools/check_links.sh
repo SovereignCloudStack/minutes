@@ -41,6 +41,7 @@ if test -z "$1" -o "$1" = "-h"; then usage; fi
 if test ! -r "$1"; then echo "ERROR: File \"$1\" not readable" 1>&2; exit 2; fi
 
 ADDS=""
+FAILED=""
 CHGD=""
 errs=0
 
@@ -91,9 +92,14 @@ while read line; do
 				else
 					curl -sLO "$LINKNONO"/download
 					ERR=$?
-					TGTFILE="${TGTFILE%.md}.md"
-					sed -i 's/\s*$//' download
-					mv download "$TGTFILE"
+					if test $ERR=0 && grep '^<!DOCTYPE html>$' download >/dev/null; then
+						ERR=1
+						rm download
+					else
+						TGTFILE="${TGTFILE%.md}.md"
+						sed -i 's/\s*$//' download
+						mv download "$TGTFILE"
+					fi
 				fi
 				if test $ERR = 0; then
 					echo " Downloaded $LINKNONO successfully."
@@ -115,7 +121,9 @@ while read line; do
 				CHANGES="$CHANGES -e 's~${LINK}~[${TGTFILE%#*}](${TGTFILE})~g'"
 			fi
 		else
-			echo "ERROR downloading $LINK" 1>&2; let errs+=1
+			echo "ERROR downloading $LINK" 1>&2
+			let errs+=1
+			FAILED="$FAILED\"$LINK\" "
 		fi
 	fi
 done < <(tr ' ' '\n' < "$INFILE"|grep 'https://input.scs.community'|sed 's/!\[..*\]//g')
@@ -133,5 +141,6 @@ if test -n "$DOWNLOAD" -a -n "$CHGD"; then
 fi
 if test $errs -gt 0; then
 	echo "$errs missing files" 1>&2
+	echo "FAILED: $FAILED"
 fi
 exit $errs
