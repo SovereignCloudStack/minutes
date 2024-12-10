@@ -55,7 +55,7 @@ echo "*** $INFILE ***"
 CHANGES=""
 while read line; do
 	# FIXME: Handle multiple links in one line
-	LINK1="$(echo $line | sed 's@^.*\(https://input.scs.community/[^) "]*\).*$@\1@')"
+	LINK1="$(echo $line | sed 's@^.*\(https://input.scs.community/[^) ">]*\).*$@\1@')"
 	LINK="${LINK1%\'}"
 	LINKANCHOR="${LINK##*#}"
 	if test "$LINK" = "$LINKANCHOR"; then LINKANCHOR=""; fi
@@ -70,8 +70,10 @@ while read line; do
 		fi
 		continue
 	fi
-	# Skip .css and .js
-	if test "${TGTFILE%.css}" != "$TGTFILE" -o "${TGTFILE%.js}" != "$TGTFILE"; then continue; fi
+	# Skip .css and .js and .xml
+	if test "${TGTFILE%.css}" != "$TGTFILE" \
+	     -o "${TGTFILE%.js}" != "$TGTFILE" \
+	     -o "${TGTFILE%.xml}" != "$TGTFILE"; then continue; fi
 	if test "$ALL" = "1" || ispic "$LINK"; then
 		ERR=0
 		echo " Consider replacing $LINK with $TGTFILE[.md] ..."
@@ -95,7 +97,7 @@ while read line; do
 				fi
 				if test $ERR = 0; then
 					echo " Downloaded $LINKNONO successfully."
-					ADDS="$ADDS ${INPATH}${TGTFILE}"
+					ADDS="$ADDS \"${INPATH}${TGTFILE}\""
 				fi
 			fi
 		fi
