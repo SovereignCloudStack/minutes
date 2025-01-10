@@ -19,9 +19,22 @@ the SP who they are
 * SP = Service Provider: A service (consuming the IDs from IdPs)
 * ID Broker = A service that consumes Identities from IdPs (or), optionally
 applies some policies/filters/changes and then provides them to an SP (or
-another Broker) -- (a "caching proxy") ```mermaid flowchart LR SP["Service"]
-IDB1["Broker1"] IDB2["Broker2"] IdP["IdP(Database)"] SP-->IDB1 IDB1-->IDB2
-IDB1-->IdP IDB2-->IdP SP-->IdP SP-->IDB2 ```
+another Broker) -- (a "caching proxy")
+
+```mermaid
+flowchart LR
+    SP["Service"];
+    IDB1["Broker1"];
+    IDB2["Broker2"];
+    IdP["IdP(Database)"];
+    SP --> IDB1;
+    IDB1 --> IDB2;
+    IDB1 --> IdP;
+    IDB2 --> IdP;
+    SP --> IdP;
+    SP --> IDB2;
+```
+
 * Tenant = Isolated space owned, controlled and paid for by an SCS customer in
 the service (SP) of an SCS Operator
 * Environment = Subspace inside a tenant with some isolation from other
@@ -232,13 +245,26 @@ access to the target system. It is not typical, but not imposssible to use
 single identity for multiple accounts
 - it is possible to link multiple identities within a single "account"
 
-```mermaid flowchart LR user["User1 (human)"] identity1["Identity 1
-(user1@example.com)"] identity2["Identity 2 (foo.bar@test.com)"]
-identity3["Identity 3 (foo@corporate.com)"] identity4["Identity 4
-(foo@private.com)"]  account1[Account 1] account2[Account 2] account3[Account
-3] user --> identity1 user --> identity2 user --> identity3 user --> identity4
-identity1 --> account1 identity1 -.-> account2 identity2 --> account2 identity3
---> account3 identity4 --> account3 ```
+```mermaid
+flowchart LR
+    user["User1 (human)"]
+    identity1["Identity 1(user1@example.com)"]
+    identity2["Identity 2 (foo.bar@test.com)"]
+    identity3["Identity 3 (foo@corporate.com)"]
+    identity4["Identity 4 (foo@private.com)"]
+    account1[Account 1]
+    account2[Account 2]
+    account3[Account3]
+    user --> identity1
+    user --> identity2
+    user --> identity3
+    user --> identity4
+    identity1 --> account1
+    identity1 -.-> account2
+    identity2 --> account2
+    identity3 --> account3
+    identity4 --> account3
+```
 
 ## Isolated tenant configuration (individual realm)
 
