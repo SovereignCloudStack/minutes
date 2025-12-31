@@ -1,4 +1,5 @@
-State of Identity federation for SCS ===
+State of Identity federation for SCS
+===
 
 This article intends to describe state of the identity federation for SCS,
 different architecture models with their benefits and limitations. 
