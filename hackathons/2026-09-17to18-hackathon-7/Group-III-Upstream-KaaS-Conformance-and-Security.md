@@ -52,7 +52,7 @@ Goal / Motivation
 	- https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Grundschutz/IT-GS-Kompendium_Einzel_PDFs_2022/07_SYS_IT_Systeme/SYS_1_6_Containerisierung_Edition_2022.pdf?__blob=publicationFile&v=3#download=1
 	- https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Grundschutz/IT-GS-Kompendium_Einzel_PDFs_2022/06_APP_Anwendungen/APP_4_4_Kubernetes_Edition_2022.pdf?__blob=publicationFile&v=3
 	- Scanning recommendation: Kubescape and Grype
-- NIST (STIG viewer): https://www.stigviewer.com/stigs/kubernetes / https://ncp.nist.gov/checklist/996/download/18641
+- DISA Kubernetes STIG (https://www.stigviewer.com/stigs/kubernetes / https://ncp.nist.gov/checklist/996/download/18641)
 	- Gardener has done assessment: https://gardener.cloud/docs/security-and-compliance/kubernetes-hardening/
 - Haven+: https://gitlab.com/commonground/haven/haven/-/blob/main/haven/cli/pkg/cncf/validate.go?ref_type=heads#L66
 - Vorgaben für Architektur von Opendesk 
